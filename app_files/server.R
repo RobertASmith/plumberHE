@@ -10,13 +10,13 @@ server <- function(input, output) {
   # 1. Load the shinyvalidate library:
   library(shinyvalidate)
   
-  # 2. Create the parent, children, and grand children input validator:
+  # 2. Create the parent, children, and grandchildren input validator:
   ## Parent input validator:
   model_inputs_iv <- InputValidator$new()
   ## Children input validator:
   probs_iv <- InputValidator$new()
   utils_iv <- InputValidator$new()
-  ## Grand children input validators:
+  ## Grandchildren input validators:
   ### Probability input validators:
   beta_p_iv <- InputValidator$new()
   gamma_p_iv <- InputValidator$new()
@@ -130,40 +130,54 @@ server <- function(input, output) {
   # 6. Attach rules to the child input validators:
   ## Probability input validator:
   beta_p_iv$condition(~ input$p_HS1_dist == "beta")
+  beta_p_iv$add_rule(inputId = "p_HS1_v1", sv_required())
   beta_p_iv$add_rule(inputId = "p_HS1_v1", rule = dist_input, dist = "beta", 
                      param = 1, data =  dists_bounds_probs)
+  beta_p_iv$add_rule(inputId = "p_HS1_v2", sv_required())
   beta_p_iv$add_rule(inputId = "p_HS1_v2", rule = dist_input, dist = "beta", 
                      param = 2, data =  dists_bounds_probs)
   gamma_p_iv$condition(~ input$p_HS1_dist == "gamma")
+  gamma_p_iv$add_rule(inputId = "p_HS1_v1", sv_required())
   gamma_p_iv$add_rule(inputId = "p_HS1_v1", rule = dist_input, dist = "gamma", 
                       param = 1, data =  dists_bounds_probs)
+  gamma_p_iv$add_rule(inputId = "p_HS1_v2", sv_required())
   gamma_p_iv$add_rule(inputId = "p_HS1_v2", rule = dist_input, dist = "gamma", 
                       param = 2, data =  dists_bounds_probs)
   lnorm_p_iv$condition(~ input$p_HS1_dist == "rlnorm")
+  lnorm_p_iv$add_rule(inputId = "p_HS1_v1", sv_required())
   lnorm_p_iv$add_rule(inputId = "p_HS1_v1", rule = dist_input, dist = "rlnorm", 
                       param = 1, data =  dists_bounds_probs)
+  lnorm_p_iv$add_rule(inputId = "p_HS1_v2", sv_required())
   lnorm_p_iv$add_rule(inputId = "p_HS1_v2", rule = dist_input, dist = "rlnorm", 
                       param = 2, data =  dists_bounds_probs)
   fixed_p_iv$condition(~ input$p_HS1_dist == "fixed")
+  fixed_p_iv$add_rule(inputId = "p_HS1_v1", sv_required())
   fixed_p_iv$add_rule(inputId = "p_HS1_v1", rule = dist_input, dist = "fixed", 
                       param = 1, data =  dists_bounds_probs)
   ## Utilities input validator:
   beta_u_iv$condition(~ input$u_S1_dist == "beta")
+  beta_u_iv$add_rule(inputId = "u_S1_v1", sv_required())
   beta_u_iv$add_rule(inputId = "u_S1_v1", rule = dist_input, dist = "beta", 
                      param = 1, data =  dists_bounds_utils)
+  beta_u_iv$add_rule(inputId = "u_S1_v2", sv_required())
   beta_u_iv$add_rule(inputId = "u_S1_v2", rule = dist_input, dist = "beta", 
                      param = 2, data =  dists_bounds_utils)
   gamma_u_iv$condition(~ input$u_S1_dist == "gamma")
+  gamma_u_iv$add_rule(inputId = "u_S1_v1", sv_required())
   gamma_u_iv$add_rule(inputId = "u_S1_v1", rule = dist_input, dist = "gamma", 
                       param = 1, data =  dists_bounds_utils)
+  gamma_u_iv$add_rule(inputId = "u_S1_v2", sv_required())
   gamma_u_iv$add_rule(inputId = "u_S1_v2", rule = dist_input, dist = "gamma", 
                       param = 2, data =  dists_bounds_utils)
   lnorm_u_iv$condition(~ input$u_S1_dist == "rlnorm")
+  lnorm_u_iv$add_rule(inputId = "u_S1_v1", sv_required())
   lnorm_u_iv$add_rule(inputId = "u_S1_v1", rule = dist_input, dist = "rlnorm", 
                       param = 1, data =  dists_bounds_utils)
+  lnorm_u_iv$add_rule(inputId = "u_S1_v2", sv_required())
   lnorm_u_iv$add_rule(inputId = "u_S1_v2", rule = dist_input, dist = "rlnorm", 
                       param = 2, data =  dists_bounds_utils)
   fixed_u_iv$condition(~ input$u_S1_dist == "fixed")
+  fixed_u_iv$add_rule(inputId = "u_S1_v1", sv_required())
   fixed_u_iv$add_rule(inputId = "u_S1_v1", rule = dist_input, dist = "fixed", 
                       param = 1, data =  dists_bounds_utils)
   # 7. Start displaying errors in the UI:
