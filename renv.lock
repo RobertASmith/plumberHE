@@ -1,6 +1,6 @@
 {
   "R": {
-    "Version": "4.2.1",
+    "Version": "4.2.0",
     "Repositories": [
       {
         "Name": "CRAN",
@@ -31,7 +31,9 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "539dc0c0c05636812f1080f473d2c177",
-      "Requirements": []
+      "Requirements": [
+        "lattice"
+      ]
     },
     "R6": {
       "Package": "R6",
@@ -338,6 +340,7 @@
         "ellipse",
         "ggplot2",
         "ggrepel",
+        "mgcv",
         "reshape2",
         "scales",
         "stringr",
@@ -560,6 +563,7 @@
         "glue",
         "gtable",
         "isoband",
+        "mgcv",
         "rlang",
         "scales",
         "tibble",
@@ -818,6 +822,14 @@
         "rlang"
       ]
     },
+    "lattice": {
+      "Package": "lattice",
+      "Version": "0.20-45",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "b64cdbb2b340437c4ee047a1f4c4377b",
+      "Requirements": []
+    },
     "lifecycle": {
       "Package": "lifecycle",
       "Version": "1.0.2",
@@ -859,6 +871,17 @@
         "rlang"
       ]
     },
+    "mgcv": {
+      "Package": "mgcv",
+      "Version": "1.8-40",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "c6b2fdb18cf68ab613bd564363e1ba0d",
+      "Requirements": [
+        "Matrix",
+        "nlme"
+      ]
+    },
     "mice": {
       "Package": "mice",
       "Version": "3.14.0",
@@ -871,6 +894,7 @@
         "cpp11",
         "dplyr",
         "generics",
+        "lattice",
         "rlang",
         "tidyr",
         "withr"
@@ -934,7 +958,9 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "4a0b3a68f846cb999ff0e8e519524fbb",
-      "Requirements": []
+      "Requirements": [
+        "lattice"
+      ]
     },
     "openssl": {
       "Package": "openssl",
@@ -1361,6 +1387,20 @@
       "Hash": "690bd2acc42a9166ce34845884459320",
       "Requirements": []
     },
+    "rticles": {
+      "Package": "rticles",
+      "Version": "0.24",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "cb84b88016fa556ff9476b71d8d5e3f0",
+      "Requirements": [
+        "knitr",
+        "rmarkdown",
+        "tinytex",
+        "xfun",
+        "yaml"
+      ]
+    },
     "rversions": {
       "Package": "rversions",
       "Version": "2.1.2",
@@ -1477,6 +1517,19 @@
       "Requirements": [
         "digest",
         "jsonlite",
+        "shiny"
+      ]
+    },
+    "shinyvalidate": {
+      "Package": "shinyvalidate",
+      "Version": "0.1.2",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "4ce7aa115e26a4eefbecab1b27bc3ada",
+      "Requirements": [
+        "glue",
+        "htmltools",
+        "rlang",
         "shiny"
       ]
     },
