@@ -16,10 +16,12 @@ server <- function(input, output) {
   ## Children input validator:
   probs_iv <- InputValidator$new()
   utils_iv <- InputValidator$new()
-  ## Parent input validators:
+  
+  # 3. Add children input validators to the Parent input validator:
   model_inputs_iv$add_validator(probs_iv)
   model_inputs_iv$add_validator(utils_iv)
-  # 4. Define a dataframe to be used in the user function below:
+  
+  # 4. Define dataframes to be used in the user function below:
   ## Probabilities distributions:
   dists_bounds_probs <- data.frame(
     dist =       c(  "beta", "gamma",  "rlnorm", "fixed"),
@@ -40,79 +42,77 @@ server <- function(input, output) {
     param_1_nm = c("shape1", "shape", "meanlog", "fixed"),
     param_2_nm = c("shape2", "scale",   "sdlog",      "")
   )
+  
   # 5. Define a function for the input validator: 
   dist_input <- function(value, dist, param, data) {
-    dist_bounds <- shiny::reactive({
-      data[data$dist == dist, -1]
-    })
+    dist_bounds <- data[data$dist == dist, -1]
     
     if(param == 1) {
-      if(value < dist_bounds()[1, param]) {
+      if(value < dist_bounds[1, param]) {
         if(dist == "fixed") {
           return(
             paste0("The acceptable fixed value should be between ",
-                   dist_bounds()[1, param], 
+                   dist_bounds[1, param], 
                    " and ", 
-                   dist_bounds()[1, param + 1]
+                   dist_bounds[1, param + 1]
             )
           )}
         return(
           paste0("In a ", dist, " distribution, an acceptable value for the ",
-                 dist_bounds()[1, param + 4],
+                 dist_bounds[1, param + 4],
                  " parameter should be between ", 
-                 dist_bounds()[1, param], 
+                 dist_bounds[1, param], 
                  " and ", 
-                 dist_bounds()[1, param + 1]
+                 dist_bounds[1, param + 1]
           )
         )}
-      if(value > dist_bounds()[1, param + 1]) {
+      if(value > dist_bounds[1, param + 1]) {
         if(dist == "fixed") {
           return(
             paste0("The acceptable fixed value should be between ",
-                   dist_bounds()[1, param], 
+                   dist_bounds[1, param], 
                    " and ", 
-                   dist_bounds()[1, param + 1]
+                   dist_bounds[1, param + 1]
             )
           )}
         return(
           paste0("In a ", dist, " distribution, an acceptable value for the ",
-                 dist_bounds()[1, param + 4],
+                 dist_bounds[1, param + 4],
                  " parameter should be between ", 
-                 dist_bounds()[1, param], 
+                 dist_bounds[1, param], 
                  " and ", 
-                 dist_bounds()[1, param + 1]
+                 dist_bounds[1, param + 1]
           )
         )}
     } else if (param == 2) {
       if(dist != "fixed"){
-        if(value < dist_bounds()[1, param + 1]) {
+        if(value < dist_bounds[1, param + 1]) {
           return(
             paste0("In a ", dist, " distribution, an acceptable value for the ",
-                   dist_bounds()[1, param + 4],
+                   dist_bounds[1, param + 4],
                    " parameter should be between ", 
-                   dist_bounds()[1, param + 1], 
+                   dist_bounds[1, param + 1], 
                    " and ", 
-                   dist_bounds()[1, param + 2]
+                   dist_bounds[1, param + 2]
             )
           )
         }}
       if(dist != "fixed"){
-        if(value > dist_bounds()[1, param + 2]) {
+        if(value > dist_bounds[1, param + 2]) {
           return(
             paste0("In a ", dist, " distribution, an acceptable value for the ",
-                   dist_bounds()[1, param + 4],
+                   dist_bounds[1, param + 4],
                    " parameter should be between ", 
-                   dist_bounds()[1, param + 1], 
+                   dist_bounds[1, param + 1], 
                    " and ", 
-                   dist_bounds()[1, param + 2]
+                   dist_bounds[1, param + 2]
             )
           )
         }}}}
+  
   # 6. Attach rules to the child input validators:
   ## Probability input validator:
-  probs_iv$condition(~ shiny::isTruthy(!is.null(input$p_HS1_dist) &
-                                         !is.na(input$p_HS1_dist) &
-                                         input$p_HS1_dist != ""))
+  probs_iv$condition(~ shiny::isTruthy(input$p_HS1_dist))
   probs_iv$add_rule(inputId = "p_HS1_v1", sv_required())
   probs_iv$add_rule(inputId = "p_HS1_v1", rule = ~ {
     dist_input(value = ., dist = input[["p_HS1_dist"]], param = 1,
@@ -123,11 +123,8 @@ server <- function(input, output) {
     dist_input(value = ., dist = input[["p_HS1_dist"]], param = 2, 
                data = dists_bounds_probs)
   })
-
   ## Utilities input validator:
-  utils_iv$condition(~ shiny::isTruthy(!is.null(input$u_S1_dist) &
-                                         !is.na(input$u_S1_dist) &
-                                         input$u_S1_dist != ""))
+  utils_iv$condition(~ shiny::isTruthy(input$u_S1_dist))
   probs_iv$add_rule(inputId = "u_S1_v1", sv_required())
   probs_iv$add_rule(inputId = "u_S1_v1", rule = ~ {
     dist_input(value = ., dist = input[["u_S1_dist"]], param = 1,
