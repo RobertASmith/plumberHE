@@ -10,34 +10,12 @@ server <- function(input, output) {
   # 1. Load the shinyvalidate library:
   library(shinyvalidate)
   
-  # 2. Create the parent, children, and grandchildren input validator:
+  # 2. Create the parent and children input validators:
   ## Parent input validator:
   model_inputs_iv <- InputValidator$new()
   ## Children input validator:
   probs_iv <- InputValidator$new()
   utils_iv <- InputValidator$new()
-  ## Grandchildren input validators:
-  ### Probability input validators:
-  beta_p_iv <- InputValidator$new()
-  gamma_p_iv <- InputValidator$new()
-  lnorm_p_iv <- InputValidator$new()
-  fixed_p_iv <- InputValidator$new()
-  ### Utilities input validators:
-  beta_u_iv <- InputValidator$new()
-  gamma_u_iv <- InputValidator$new()
-  lnorm_u_iv <- InputValidator$new()
-  fixed_u_iv <- InputValidator$new()
-  # 3. Add child input validators to parent:
-  ## Probability input validators:
-  probs_iv$add_validator(beta_p_iv)
-  probs_iv$add_validator(gamma_p_iv)
-  probs_iv$add_validator(lnorm_p_iv)
-  probs_iv$add_validator(fixed_p_iv)
-  ## Utilities input validators:
-  utils_iv$add_validator(beta_u_iv)
-  utils_iv$add_validator(gamma_u_iv)
-  utils_iv$add_validator(lnorm_u_iv)
-  utils_iv$add_validator(fixed_u_iv)
   ## Parent input validators:
   model_inputs_iv$add_validator(probs_iv)
   model_inputs_iv$add_validator(utils_iv)
@@ -62,124 +40,105 @@ server <- function(input, output) {
     param_1_nm = c("shape1", "shape", "meanlog", "fixed"),
     param_2_nm = c("shape2", "scale",   "sdlog",      "")
   )
-  # 5. Define a function for the input validator:  
+  # 5. Define a function for the input validator: 
   dist_input <- function(value, dist, param, data) {
-    dist_bounds <- data[data$dist == dist, -1]
+    dist_bounds <- shiny::reactive({
+      data[data$dist == dist, -1]
+    })
+    
     if(param == 1) {
-      if(value < dist_bounds[1, param]) {
+      if(value < dist_bounds()[1, param]) {
         if(dist == "fixed") {
           return(
             paste0("The acceptable fixed value should be between ",
-                   dist_bounds[1, param], 
+                   dist_bounds()[1, param], 
                    " and ", 
-                   dist_bounds[1, param + 1]
+                   dist_bounds()[1, param + 1]
             )
           )}
         return(
           paste0("In a ", dist, " distribution, an acceptable value for the ",
-                 dist_bounds[1, param + 4],
+                 dist_bounds()[1, param + 4],
                  " parameter should be between ", 
-                 dist_bounds[1, param], 
+                 dist_bounds()[1, param], 
                  " and ", 
-                 dist_bounds[1, param + 1]
+                 dist_bounds()[1, param + 1]
           )
         )}
-      if(value > dist_bounds[1, param + 1]) {
+      if(value > dist_bounds()[1, param + 1]) {
         if(dist == "fixed") {
           return(
             paste0("The acceptable fixed value should be between ",
-                   dist_bounds[1, param], 
+                   dist_bounds()[1, param], 
                    " and ", 
-                   dist_bounds[1, param + 1]
+                   dist_bounds()[1, param + 1]
             )
           )}
         return(
           paste0("In a ", dist, " distribution, an acceptable value for the ",
-                 dist_bounds[1, param + 4],
+                 dist_bounds()[1, param + 4],
                  " parameter should be between ", 
-                 dist_bounds[1, param], 
+                 dist_bounds()[1, param], 
                  " and ", 
-                 dist_bounds[1, param + 1]
+                 dist_bounds()[1, param + 1]
           )
         )}
     } else if (param == 2) {
       if(dist != "fixed"){
-        if(value < dist_bounds[1, param + 1]) {
+        if(value < dist_bounds()[1, param + 1]) {
           return(
             paste0("In a ", dist, " distribution, an acceptable value for the ",
-                   dist_bounds[1, param + 4],
+                   dist_bounds()[1, param + 4],
                    " parameter should be between ", 
-                   dist_bounds[1, param + 1], 
+                   dist_bounds()[1, param + 1], 
                    " and ", 
-                   dist_bounds[1, param + 2]
+                   dist_bounds()[1, param + 2]
             )
           )
         }}
       if(dist != "fixed"){
-        if(value > dist_bounds[1, param + 2]) {
+        if(value > dist_bounds()[1, param + 2]) {
           return(
             paste0("In a ", dist, " distribution, an acceptable value for the ",
-                   dist_bounds[1, param + 4],
+                   dist_bounds()[1, param + 4],
                    " parameter should be between ", 
-                   dist_bounds[1, param + 1], 
+                   dist_bounds()[1, param + 1], 
                    " and ", 
-                   dist_bounds[1, param + 2]
+                   dist_bounds()[1, param + 2]
             )
           )
         }}}}
   # 6. Attach rules to the child input validators:
   ## Probability input validator:
-  beta_p_iv$condition(~ input$p_HS1_dist == "beta")
-  beta_p_iv$add_rule(inputId = "p_HS1_v1", sv_required())
-  beta_p_iv$add_rule(inputId = "p_HS1_v1", rule = dist_input, dist = "beta", 
-                     param = 1, data =  dists_bounds_probs)
-  beta_p_iv$add_rule(inputId = "p_HS1_v2", sv_required())
-  beta_p_iv$add_rule(inputId = "p_HS1_v2", rule = dist_input, dist = "beta", 
-                     param = 2, data =  dists_bounds_probs)
-  gamma_p_iv$condition(~ input$p_HS1_dist == "gamma")
-  gamma_p_iv$add_rule(inputId = "p_HS1_v1", sv_required())
-  gamma_p_iv$add_rule(inputId = "p_HS1_v1", rule = dist_input, dist = "gamma", 
-                      param = 1, data =  dists_bounds_probs)
-  gamma_p_iv$add_rule(inputId = "p_HS1_v2", sv_required())
-  gamma_p_iv$add_rule(inputId = "p_HS1_v2", rule = dist_input, dist = "gamma", 
-                      param = 2, data =  dists_bounds_probs)
-  lnorm_p_iv$condition(~ input$p_HS1_dist == "rlnorm")
-  lnorm_p_iv$add_rule(inputId = "p_HS1_v1", sv_required())
-  lnorm_p_iv$add_rule(inputId = "p_HS1_v1", rule = dist_input, dist = "rlnorm", 
-                      param = 1, data =  dists_bounds_probs)
-  lnorm_p_iv$add_rule(inputId = "p_HS1_v2", sv_required())
-  lnorm_p_iv$add_rule(inputId = "p_HS1_v2", rule = dist_input, dist = "rlnorm", 
-                      param = 2, data =  dists_bounds_probs)
-  fixed_p_iv$condition(~ input$p_HS1_dist == "fixed")
-  fixed_p_iv$add_rule(inputId = "p_HS1_v1", sv_required())
-  fixed_p_iv$add_rule(inputId = "p_HS1_v1", rule = dist_input, dist = "fixed", 
-                      param = 1, data =  dists_bounds_probs)
+  probs_iv$condition(~ shiny::isTruthy(!is.null(input$p_HS1_dist) &
+                                         !is.na(input$p_HS1_dist) &
+                                         input$p_HS1_dist != ""))
+  probs_iv$add_rule(inputId = "p_HS1_v1", sv_required())
+  probs_iv$add_rule(inputId = "p_HS1_v1", rule = ~ {
+    dist_input(value = ., dist = input[["p_HS1_dist"]], param = 1,
+               data = dists_bounds_probs)
+  })
+  probs_iv$add_rule(inputId = "p_HS1_v2", sv_required())
+  probs_iv$add_rule(inputId = "p_HS1_v2", rule = ~ {
+    dist_input(value = ., dist = input[["p_HS1_dist"]], param = 2, 
+               data = dists_bounds_probs)
+  })
+
   ## Utilities input validator:
-  beta_u_iv$condition(~ input$u_S1_dist == "beta")
-  beta_u_iv$add_rule(inputId = "u_S1_v1", sv_required())
-  beta_u_iv$add_rule(inputId = "u_S1_v1", rule = dist_input, dist = "beta", 
-                     param = 1, data =  dists_bounds_utils)
-  beta_u_iv$add_rule(inputId = "u_S1_v2", sv_required())
-  beta_u_iv$add_rule(inputId = "u_S1_v2", rule = dist_input, dist = "beta", 
-                     param = 2, data =  dists_bounds_utils)
-  gamma_u_iv$condition(~ input$u_S1_dist == "gamma")
-  gamma_u_iv$add_rule(inputId = "u_S1_v1", sv_required())
-  gamma_u_iv$add_rule(inputId = "u_S1_v1", rule = dist_input, dist = "gamma", 
-                      param = 1, data =  dists_bounds_utils)
-  gamma_u_iv$add_rule(inputId = "u_S1_v2", sv_required())
-  gamma_u_iv$add_rule(inputId = "u_S1_v2", rule = dist_input, dist = "gamma", 
-                      param = 2, data =  dists_bounds_utils)
-  lnorm_u_iv$condition(~ input$u_S1_dist == "rlnorm")
-  lnorm_u_iv$add_rule(inputId = "u_S1_v1", sv_required())
-  lnorm_u_iv$add_rule(inputId = "u_S1_v1", rule = dist_input, dist = "rlnorm", 
-                      param = 1, data =  dists_bounds_utils)
-  lnorm_u_iv$add_rule(inputId = "u_S1_v2", sv_required())
-  lnorm_u_iv$add_rule(inputId = "u_S1_v2", rule = dist_input, dist = "rlnorm", 
-                      param = 2, data =  dists_bounds_utils)
-  fixed_u_iv$condition(~ input$u_S1_dist == "fixed")
-  fixed_u_iv$add_rule(inputId = "u_S1_v1", sv_required())
-  fixed_u_iv$add_rule(inputId = "u_S1_v1", rule = dist_input, dist = "fixed", 
-                      param = 1, data =  dists_bounds_utils)
+  utils_iv$condition(~ shiny::isTruthy(!is.null(input$u_S1_dist) &
+                                         !is.na(input$u_S1_dist) &
+                                         input$u_S1_dist != ""))
+  probs_iv$add_rule(inputId = "u_S1_v1", sv_required())
+  probs_iv$add_rule(inputId = "u_S1_v1", rule = ~ {
+    dist_input(value = ., dist = input[["u_S1_dist"]], param = 1,
+               data = dists_bounds_utils)
+  })
+  probs_iv$add_rule(inputId = "u_S1_v2", sv_required())
+  probs_iv$add_rule(inputId = "u_S1_v2", rule = ~ {
+    dist_input(value = ., dist = input[["u_S1_dist"]], param = 2, 
+               data = dists_bounds_utils)
+  })
+  
   # 7. Start displaying errors in the UI:
   model_inputs_iv$enable()
   
