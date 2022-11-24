@@ -9,9 +9,9 @@ library(httr)
 results <- httr::content(
   httr::POST(
     # the Server URL can also be kept confidential, but will leave here for now 
-    url = "https://connect.bresmed.com",
+    url = "https://living-he-32wi7oazkq-nw.a.run.app",
     # path for the API within the server URL
-    path = "rhta2022/runDARTHmodel",
+    path = "runDARTHmodel",
     # code is passed to the client API from GitHub.
     query = list(model_functions = 
                    paste0("https://raw.githubusercontent.com/",
@@ -27,10 +27,9 @@ results <- httr::content(
       )
     ),
     # we include a key here to access the API here the key is a env variable
-    config = httr::add_headers(Authorization = paste0("Key ", 
-                                                      Sys.getenv("CONNECT_KEY")))
+    config = httr::add_headers(
+      key = Sys.getenv("API_KEY")))
   )
-)
 
 # write the results as a csv to the outputs folder...
 write.csv(x = results,
